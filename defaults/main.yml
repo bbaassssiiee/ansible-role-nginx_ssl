@@ -19,3 +19,4 @@ ssl_certificate_install: true
 ssl_certificate_path: /etc/nginx/cert
 ssl_certificate: server.pem
 ssl_certificate_key: server.key
+validate_certs: false # self-signed for now
