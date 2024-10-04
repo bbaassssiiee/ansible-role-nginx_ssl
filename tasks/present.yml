@@ -1,0 +1,91 @@
+# Tasks to reach desired_state: present ---
+- name: Check required variables
+  ansible.builtin.fail: msg="Variable '{{ item }}' is not defined"
+  when: item not in vars
+  loop:
+    - ssl_certificate
+    - ssl_certificate_key
+    - server_name
+
+- name: Install prerequisite packages
+  ansible.builtin.include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Install nginx
+  become: true
+  ansible.builtin.package:
+    name: nginx
+    state: present
+  register: install_nginx
+  retries: 5
+  delay: 60
+  until: install_nginx is success
+
+- name: Configure main nginx conf file.
+  become: true
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Configure redirect nginx conf
+  become: true
+  ansible.builtin.template:
+    src: redirect_http_to_https.conf.j2
+    dest: /etc/nginx/conf.d/redirect_http_to_https.conf
+    owner: root
+    group: root
+    mode: 0755
+  when: redirect_http_to_https_enabled | bool
+  notify: Restart nginx
+
+- name: Configure the reverse proxy conf
+  become: true
+  ansible.builtin.template:
+    src: reverse_proxy.conf.j2
+    dest: /etc/nginx/conf.d/reverse_proxy.conf
+    owner: root
+    group: root
+    mode: 0755
+  notify: Restart nginx
+
+- name: Ensure ssl_certificate_path exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ ssl_certificate_path }}"
+    state: directory
+    mode: 0755
+  when: ssl_certificate_install
+  notify: Restart nginx
+
+- name: Create private key (RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: "{{ ssl_certificate_path }}/{{ ssl_certificate_key }}"
+    group: nginx
+    owner: nginx
+  notify: Restart nginx
+
+- name: Generate an OpenSSL CSR with Subject information
+  community.crypto.openssl_csr:
+    path: "{{ ssl_certificate_path }}/server.csr"
+    group: nginx
+    owner: nginx
+    privatekey_path: "{{ ssl_certificate_path }}/{{ ssl_certificate_key }}"
+    country_name: IT
+    organization_name: Dev
+    email_address: noreply@example.com
+    common_name: "{{ ansible_fqdn | default(ansible_hostname) }}"
+
+- name: Generate a Self Signed OpenSSL certificate
+  community.crypto.x509_certificate:
+    path: "{{ ssl_certificate_path }}/{{ ssl_certificate }}"
+    group: nginx
+    owner: nginx
+    privatekey_path: "{{ ssl_certificate_path }}/{{ ssl_certificate_key }}"
+    csr_path: "{{ ssl_certificate_path }}/server.csr"
+    provider: selfsigned
+  notify: Restart nginx
+
+- name: Restart nginx
+  ansible.builtin.meta: flush_handlers

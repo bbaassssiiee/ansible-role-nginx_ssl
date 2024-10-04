@@ -1,0 +1,21 @@
+---
+# defaults
+
+desired_state: present
+verify_state: true
+package: nginx
+service: "{{ package }}"
+service_port: 443
+nginx_conf_dir: /etc/nginx
+reverse_proxy_conf: "reverse_proxy.conf.j2"
+## For production deployments,You SHOULD change it.
+server_name: "{{ ansible_fqdn | default(ansible_hostname) }}"
+nginx_daemon: nginx
+nginx_worker_processes: 1
+nginx_conf_template: nginx.conf.j2
+
+redirect_http_to_https_enabled: true
+ssl_certificate_install: true
+ssl_certificate_path: /etc/nginx/cert
+ssl_certificate: server.pem
+ssl_certificate_key: server.key
