@@ -35,17 +35,6 @@
     path: /etc/nginx/conf.d/default.conf
     state: absent
 
-- name: Configure redirect of http
-  become: true
-  ansible.builtin.template:
-    src: redirect_http_to_https.conf.j2
-    dest: /etc/nginx/conf.d/redirect_http_to_https.conf
-    owner: root
-    group: root
-    mode: '0755'
-  when: redirect_http_to_https_enabled | bool
-  notify: Restart nginx
-
 - name: Configure the reverse proxy
   become: true
   ansible.builtin.template:
