@@ -14,7 +14,6 @@ nginx_daemon: nginx
 nginx_worker_processes: 1
 nginx_conf_template: nginx.conf.j2
 
-redirect_http_to_https_enabled: true
 ssl_certificate_install: true
 ssl_certificate_path: /etc/nginx/cert
 ssl_certificate: server.pem
