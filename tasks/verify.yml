@@ -40,9 +40,9 @@
         state: started
         timeout: 10
 
-    - name: Send https request
+    - name: Send https request to server_name
       ansible.builtin.uri:
-        url: "https://{{ inventory_hostname }}"
+        url: "https://{{ server_name }}"
         method: HEAD
         return_content: true
         validate_certs: "{{ validate_certs }}"
