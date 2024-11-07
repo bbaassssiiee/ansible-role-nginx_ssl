@@ -7,11 +7,11 @@
   ansible.builtin.package_facts:
   no_log: true
 
-- name: Assert package is installed
+- name: Assert package is in desired_state
   ansible.builtin.assert:
     quiet: true
     that:
-      - "'nginx' in ansible_facts.packages"
+      - "'nginx' {{ package_clause }} ansible_facts.packages"
 
 - name: Gather service facts
   ansible.builtin.service_facts:
