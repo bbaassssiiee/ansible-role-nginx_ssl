@@ -1,6 +1,8 @@
-# Tasks to reach desired_state: present ---
+# Tasks to reach desired_state: present
+---
 - name: Check required variables
-  ansible.builtin.fail: msg="Variable '{{ item }}' is not defined"
+  ansible.builtin.fail:
+    msg: "Variable '{{ item }}' is not defined"
   when: item not in vars
   loop:
     - ssl_certificate
