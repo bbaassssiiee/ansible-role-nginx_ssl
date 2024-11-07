@@ -35,6 +35,18 @@
   ansible.builtin.setup:
     gather_subset: selinux
 
+- name: Populate service facts
+  when: ansible_facts.services is not defined
+  ansible.builtin.service_facts:
+
+- name: Enable https in firewalld
+  when: "ansible_facts.services['firewalld.service'].state == 'running'"
+  ansible.builtin.firewalld:
+    service: https
+    permanent: true
+    immediate: true
+    state: enabled
+  
 - name: Set httpd_can_network_connect
   become: true
   ansible.posix.seboolean:
