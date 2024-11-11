@@ -3,6 +3,7 @@
 
 desired_state: present
 verify_state: true
+nginx_add_repo: true
 package: nginx
 service: "{{ package }}"
 service_port: 443

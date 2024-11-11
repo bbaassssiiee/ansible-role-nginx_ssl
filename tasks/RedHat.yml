@@ -1,11 +1,13 @@
 - name: Import nginx signing key
   become: true
+  when: nginx_add_repo | bool
   ansible.builtin.rpm_key:
     key: https://nginx.org/keys/nginx_signing.key
     state: present
 
 - name: Add nginx stable repo
   become: true
+  when: nginx_add_repo | bool
   ansible.builtin.copy:
     dest: /etc/yum.repos.d/nginx-stable.repo
     owner: root
@@ -21,6 +23,7 @@
         module_hotfixes=true
 
 - name: Update yum cache
+  when: nginx_add_repo | bool
   become: true
   ansible.builtin.yum:
     state: present
