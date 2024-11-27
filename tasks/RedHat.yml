@@ -30,6 +30,7 @@
     update_cache: true
 
 - name: Install dependencies
+  become: true
   ansible.builtin.yum:
     name: python3-libsemanage
     state: present
@@ -44,6 +45,7 @@
 
 - name: Enable https in firewalld
   when: "ansible_facts.services['firewalld.service'].state == 'running'"
+  become: true
   ansible.posix.firewalld:
     service: https
     permanent: true
