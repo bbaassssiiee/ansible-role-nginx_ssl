@@ -49,5 +49,6 @@
       register: web
 
     - name: Display result
+      when: not ansible_check_mode
       ansible.builtin.debug:
         msg: "{{ web.status }}"
