@@ -1,7 +1,7 @@
 # Variable values for desired_state: absent
 ---
 
-package_clause: "not in"
+package_clause: "'nginx' not in ansible_facts.packages"
 service_state: stopped
 systemd_state: stopped
 systemd_enabled: false

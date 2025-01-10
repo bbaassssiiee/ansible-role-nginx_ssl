@@ -7,11 +7,15 @@
   ansible.builtin.package_facts:
   no_log: true
 
-- name: Assert package is in desired_state
+- name: "Plan: {{ package_clause }}"
+  ansible.builtin.assert:
+    that: package_clause is defined
+
+- name: "Test: {{ package_clause }}"
   ansible.builtin.assert:
     quiet: true
     that:
-      - "'nginx' {{ package_clause }} ansible_facts.packages"
+      - package_clause
 
 - name: Gather service facts
   ansible.builtin.service_facts:
