@@ -1,7 +1,6 @@
-# Variable values for desired_state: present
 ---
-
-package_clause: package_clause: "'nginx' in ansible_facts.packages"
+# Variable values for desired_state: present
+package_clause: "'nginx' in ansible_facts.packages"
 service_state: running
 systemd_state: started
 systemd_enabled: true
