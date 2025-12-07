@@ -25,13 +25,13 @@
 - name: Update yum cache
   when: nginx_add_repo | bool
   become: true
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     state: present
     update_cache: true
 
 - name: Install dependencies
   become: true
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: python3-libsemanage
     state: present
 
